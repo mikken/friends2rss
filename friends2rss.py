@@ -15,7 +15,7 @@ import sys
 
 from bs4 import BeautifulSoup
 
-import rss_builder
+from friendsaux import rss_builder
 
 def open_url():
     print('opening page', URL)

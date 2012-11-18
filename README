@@ -34,4 +34,3 @@ This version is still incomplete
 
 - Respect Python style guidelines
 - Config file
-- Move auxiliary modules into a package
