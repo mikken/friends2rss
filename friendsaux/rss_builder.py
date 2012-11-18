@@ -1,6 +1,8 @@
 #/usr/bin/env python3
+"""This module builds XML file with RSS feed using extracted information.
 
-# This module is for building XML file with RSS feed using extracted information
+Author: Paul Volkov
+"""
 
 import re
 import sys
@@ -10,6 +12,7 @@ import html
 timezone_shift = 4
 
 class Entry:
+    """Stores a single post entry with all related info."""
     __slots__ = ('author', 'date', 'subject', 'link', 'text')
 
     def __repr__(self):
@@ -17,6 +20,7 @@ class Entry:
                 self.link, self.text))
 
 def convert_date(old_date):
+    """Converts a date found in LJ's HTML code into RSS format."""
     month_names = ('January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December')
     weekday_names = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')
@@ -60,6 +64,7 @@ def convert_date(old_date):
         sys.exit(10)
 
 def build_rss(entries, title, link, description, image):
+    """Returns string with RSS code built from 'entries' list."""
     rss_feed = ['<?xml version="1.0" encoding="utf-8" ?>\n\
             <rss version="2.0"><channel>\
             <title>{0}</title><link>{1}</link><description>{2}\
@@ -73,8 +78,10 @@ def build_rss(entries, title, link, description, image):
         rss_feed.append('<title>{0}</title>'.format(entry.subject))
         rss_feed.append('<author>{0}</author>'.format(entry.author))
         rss_feed.append('<link>{0}</link>'.format(entry.link))
-        rss_feed.append('<pubDate>{0}</pubDate>'.format(convert_date(entry.date)))
-        rss_feed.append('<description>{0}</description>'.format(html.escape(entry.text)))
+        rss_feed.append('<pubDate>{0}</pubDate>'.format(\
+                convert_date(entry.date)))
+        rss_feed.append('<description>{0}</description>'.format(\
+                html.escape(entry.text)))
         rss_feed.append('</item>')
     rss_feed.append('</channel></rss>')
     return '\n'.join(rss_feed)

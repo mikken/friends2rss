@@ -1,6 +1,8 @@
 #!/usr/bin/python3
+"""This script loads LJ cookies and then generates RSS feed from friends page.
 
-# This script loads LJ cookies and then generates RSS feed from friends page
+Author: Paul Volkov
+"""
 
 # Base URL
 URL = 'http://speckius.livejournal.com/friends/'
@@ -18,6 +20,7 @@ from bs4 import BeautifulSoup
 from friendsaux import rss_builder
 
 def open_url():
+    """Retreives friends page and returns the response."""
     print('opening page', URL)
     try:
         return opener.open(URL)
@@ -27,10 +30,12 @@ def open_url():
 
 
 def find_class(tag, searchtag, searchclass):
+    """Returns tag's or soup's subtag with a given class name."""
     return tag.find(searchtag, {'class' : searchclass})
 
 
 def parse_page(soup, entries):
+    """Goes through a page and generates a list with entries."""
     glob_divs = soup.findAll('div', {'class' : 'subcontent'})
     for glob_div_tag in glob_divs:
         entry = rss_builder.Entry()

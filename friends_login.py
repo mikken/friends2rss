@@ -1,6 +1,11 @@
 #!/usr/bin/python3
+"""This script generates cookies file to use with LiveJournal.
 
-# This script prompts for LJ username and password and saves resulting cookies into a file
+It will prompt you for username and password, perform a login and
+save resulting cookies into a file.
+
+Author: Paul Volkov
+"""
 
 URL = 'https://www.livejournal.com/login.bml?ret=1'
 
@@ -16,7 +21,8 @@ values['user'] = input('Username: ')
 values['password'] = getpass.getpass()
 jar = http.cookiejar.MozillaCookieJar()
 cooker = urllib.request.HTTPCookieProcessor(jar)
-https_sslv3_handler = urllib.request.HTTPSHandler(context=ssl.SSLContext(ssl.PROTOCOL_SSLv3))
+https_sslv3_handler = urllib.request.\
+        HTTPSHandler(context=ssl.SSLContext(ssl.PROTOCOL_SSLv3))
 opener = urllib.request.build_opener(cooker, https_sslv3_handler)
 data = urllib.parse.urlencode(values).encode('utf-8')
 print('opening page...')
