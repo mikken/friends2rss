@@ -12,6 +12,9 @@ it locally.
 It will ask for your username and password and store cookies in
 lj_cookies.txt.
 
+- Set friends page URL and parse depth (in pages) in configuration
+file (python2rss.conf). Use python2rss.conf.example as a reference.
+
 - Executing friends2rss.py will generate the actual feed.
 It'll be stored in friends.xml.
 
@@ -27,11 +30,3 @@ You need to have Beautiful Soup 4 installed.
 
 This software was tested only on 'Icy Blue' journal style.
 May fail with other styles.
-
-5. Notes
-
-This version is still incomplete
-
-TODO:
-- Config file
-- Working directory
