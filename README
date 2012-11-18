@@ -8,7 +8,7 @@ it locally.
 
 2. How to use.
 
-- Generate cookies file by executing friends_login.py.
+- Generate cookies file by executing lj_login.py.
 It will ask for your username and password and store cookies in
 lj_cookies.txt.
 
