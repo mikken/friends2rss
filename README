@@ -1,0 +1,37 @@
+=== friends2rss python script ===
+
+1. Introduction.
+
+Since LiveJournal does not allow to fetch RSS friends feeds for
+basic accounts, we introduce this Python 3 script for generating
+it locally.
+
+2. How to use.
+
+- Generate cookies file by executing friends_login.py.
+It will ask for your username and password and store cookies in
+lj_cookies.txt.
+
+- Executing friends2rss.py will generate the actual feed.
+It'll be stored in feed.xml.
+
+- You should generate the feed periodically using your favourite
+tool and add it into agregator software or online services (like
+Google Reader).
+
+3. Requirements.
+
+You need to have Beautiful Soup 4 installed.
+
+4. Restrictions.
+
+This software was tested only on 'Icy Blue' journal style.
+May fail with other styles.
+
+5. Notes
+
+This version is still incomplete
+
+- Respect Python style guidelines
+- Config file
+- Move auxiliary modules into a package
