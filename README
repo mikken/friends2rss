@@ -13,7 +13,7 @@ It will ask for your username and password and store cookies in
 lj_cookies.txt.
 
 - Executing friends2rss.py will generate the actual feed.
-It'll be stored in feed.xml.
+It'll be stored in friends.xml.
 
 - You should generate the feed periodically using your favourite
 tool and add it into agregator software or online services (like

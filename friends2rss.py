@@ -92,5 +92,5 @@ while depth > 0:
     depth -= 1
 rss_feed = rss_builder.build_rss(entries, title, initialURL, \
         'livejournal friends feed', image)
-with open('feed.xml', 'w') as f:
+with open('friends.xml', 'w') as f:
     f.write(rss_feed)
