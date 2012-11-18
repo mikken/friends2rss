@@ -54,6 +54,8 @@ def parse_page(soup, entries):
             entry.link = corrected[:corrected.find('?')]
 
         entrytext_tag = find_class(glob_div_tag, 'div', 'entry_text')
+        for iframe_tag in entrytext_tag.findAll('iframe'):
+            iframe_tag.replaceWith('(IFRAME)')
         entry.text = entrytext_tag.encode('utf-8').decode()
         # need to strip <div> and </div>
         pos = entry.text.find('>')
