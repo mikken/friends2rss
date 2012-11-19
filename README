@@ -22,6 +22,8 @@ It'll be stored in friends.xml.
 tool and add it into agregator software or online services (like
 Google Reader).
 
+- Use -q argument for 'quiet' mode.
+
 3. Requirements.
 
 You need to have Beautiful Soup 4 installed.
