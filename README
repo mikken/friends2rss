@@ -15,6 +15,9 @@ lj_cookies.txt.
 - Set friends page URL and parse depth (in pages) in configuration
 file (python2rss.conf). Use python2rss.conf.example as a reference.
 
+- 'protected_prefix' option is used for prefixing protected post's
+subject.
+
 - Executing friends2rss.py will generate the actual feed.
 It'll be stored in friends.xml.
 

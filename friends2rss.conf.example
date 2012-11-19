@@ -1,3 +1,4 @@
 [global]
 URL = http://tema.livejournal.com/friends/
 depth = 2
+protected_prefix = [*]

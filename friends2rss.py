@@ -46,6 +46,9 @@ def parse_page(soup, entries):
         entry.date = date_tag.contents[0]
         a_tag = datesubject_tag.find('a')
         entry.subject = a_tag.contents[0]
+        protected_tag = datesubject_tag.find('img', alt='[protected post]')
+        if (protected_tag):
+            entry.subject = protected_prefix + ' ' + entry.subject
         try:
             entry.link = a_tag.attrs['href']
         except KeyError:
@@ -79,7 +82,7 @@ def check_logged_state(soup):
 
 def main():
     """Script entry point"""
-    global URL, opener
+    global URL, opener, protected_prefix
     # First, set working directory to current .py's location
     chdir(dirname(realpath(abspath(__file__))))
     # Load config
@@ -89,6 +92,7 @@ def main():
         URL = config['global']['URL']
         initialURL = URL
         depth = int(config['global']['depth'])
+        protected_prefix = config['global']['protected_prefix']
     except IOError:
         sys.stderr.write('Could not read config file\n')
         sys.exit(3)
