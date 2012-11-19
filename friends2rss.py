@@ -64,6 +64,19 @@ def parse_page(soup, entries):
         entries.append(entry)
 
 
+def check_logged_state(soup):
+    """Checks if we are logged in by analyzing HTML page.
+
+    Returns True in case of a yes."""
+    mark_tag = soup.find('input', {'name' : 'user'})
+    if (not mark_tag):
+        return False
+    if 'value' in mark_tag.attrs.keys():
+        return True
+    else:
+        return False
+
+
 def main():
     """Script entry point"""
     global URL, opener
@@ -94,6 +107,9 @@ def main():
     response = open_url()
     page = response.read().decode('utf-8')
     soup = BeautifulSoup(page)
+    if not check_logged_state(soup):
+        sys.stderr.write('Not logged in\n')
+        sys.exit(26)
     title = soup.title
     userpic_tag = soup.find('img', alt="Userpic")
     ara_tag = find_class(soup, 'a', 'i-ljuser-username')
