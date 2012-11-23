@@ -35,7 +35,3 @@ You need to have Beautiful Soup 4 installed.
 
 This software was tested only on 'Icy Blue' journal style.
 May fail with other styles.
-
-5. Known bugs
-
-Reposts' bodies may differ between multiple fetches.

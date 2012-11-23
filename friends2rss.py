@@ -58,8 +58,13 @@ def parse_page(soup, entries):
             entry.link = corrected[:corrected.find('?')]
 
         entrytext_tag = find_class(glob_div_tag, 'div', 'entry_text')
+        # iframes vary between refetches, we strip them
         for iframe_tag in entrytext_tag.findAll('iframe'):
             iframe_tag.replaceWith('(IFRAME)')
+        # remove vk.com's button from reposts for the same reason
+        for vk_tag in entrytext_tag.findAll('div',
+                {'class' : 'lj-like-item lj-like-item-vkontakte'}):
+            vk_tag.replaceWith('')
         entry.text = entrytext_tag.encode('utf-8').decode()
         # need to strip <div> and </div>
         pos = entry.text.find('>')
