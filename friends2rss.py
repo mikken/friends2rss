@@ -61,9 +61,8 @@ def parse_page(soup, entries):
         # iframes vary between refetches, we strip them
         for iframe_tag in entrytext_tag.findAll('iframe'):
             iframe_tag.replaceWith('(IFRAME)')
-        # remove vk.com's button from reposts for the same reason
-        for vk_tag in entrytext_tag.findAll('div',
-                {'class' : 'lj-like-item lj-like-item-vkontakte'}):
+        # remove 'like' buttons for the same reason
+        for vk_tag in entrytext_tag.findAll('div', {'class' : 'lj-like'}):
             vk_tag.replaceWith('')
         entry.text = entrytext_tag.encode('utf-8').decode()
         # need to strip <div> and </div>
