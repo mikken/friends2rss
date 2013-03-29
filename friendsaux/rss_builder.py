@@ -24,17 +24,13 @@ def convert_date(old_date):
     month_names = ('January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December')
     weekday_names = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')
-    match = re.search(r'(\d+) (.+) (\d\d\d\d) @ (\d\d):(\d\d) (.m)', old_date)
+    match = re.search(r'(.+) (\d+) (\d\d\d\d), (\d\d):(\d\d)', old_date)
     if match:
-        day = int(match.group(1))
-        month = match.group(2)
+        day = int(match.group(2))
+        month = match.group(1)
         year = int(match.group(3))
         hour = int(match.group(4))
         minute = int(match.group(5))
-        am_pm = match.group(6)
-        if hour == 12 and am_pm == 'pm':
-            hour = 0
-            am_pm = 'am'
         try:
             month = month_names.index(month) + 1
         except ValueError:
@@ -42,11 +38,7 @@ def convert_date(old_date):
             sys.exit(11)
         pubdate = datetime.datetime(year, month, day, hour, minute)
         zoneshift = datetime.timedelta(0, timezone_shift * 3600, 0)
-        if am_pm == 'pm':
-            am_pm_shift = datetime.timedelta(0, 12 * 3600, 0)
-        else:
-            am_pm_shift = datetime.timedelta(0, 0, 0)
-        pubdate = pubdate - zoneshift + am_pm_shift
+        pubdate = pubdate - zoneshift
         weekday = weekday_names[pubdate.weekday()]
         day = str(pubdate.day)
         month = month_names[pubdate.month - 1][:3]
@@ -65,10 +57,10 @@ def convert_date(old_date):
 
 def build_rss(entries, title, link, description, image):
     """Returns string with RSS code built from 'entries' list."""
-    rss_feed = ['<?xml version="1.0" encoding="utf-8" ?>\n\
-            <rss version="2.0"><channel>\
-            <title>{0}</title><link>{1}</link><description>{2}\
-            </description>\n'.format(title, link, description)]
+    rss_feed = ["""<?xml version="1.0" encoding="utf-8" ?>\n\
+            <rss version="2.0"><channel><title>{0}</title>\n\
+            <link>{1}</link><description>{2}</description>\n"""\
+            .format(title, link, description)]
     rss_feed.append('<lastBuildDate>{0}</lastBuildDate>'\
             .format(convert_date(entries[0].date)))
     rss_feed.append('<image><url>{url}</url><title>{title}</title>\

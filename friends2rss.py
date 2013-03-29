@@ -12,7 +12,7 @@ import http.cookiejar
 from os.path import abspath, realpath, dirname
 from os import chdir
 
-from bs4 import BeautifulSoup
+from lxml import etree
 
 from friendsaux import rss_builder
 
@@ -27,47 +27,34 @@ def open_url():
         sys.exit(2)
 
 
-def find_class(tag, searchtag, searchclass):
-    """Returns tag's or soup's subtag with a given class name."""
-    return tag.find(searchtag, {'class' : searchclass})
-
-
 def parse_page(soup, entries):
     """Goes through a page and generates a list with entries."""
-    glob_divs = soup.findAll('div', {'class' : 'subcontent'})
+    glob_divs = soup.findall('.//div[@class="b-lenta-item-wrapper"]')
     for glob_div_tag in glob_divs:
         entry = rss_builder.Entry()
 
-        font_tag = glob_div_tag.find('font')
-        entry.author = font_tag.contents[0]
+        span_tag = glob_div_tag.find('.//span[@class="ljuser  i-ljuser     "]')
+        entry.author = span_tag.get('lj:user')
 
-        datesubject_tag = find_class(glob_div_tag, 'div', 'datesubject')
-        date_tag = find_class(datesubject_tag, 'div', 'date')
-        entry.date = date_tag.contents[0]
-        a_tag = datesubject_tag.find('a')
-        entry.subject = a_tag.contents[0]
-        protected_tag = datesubject_tag.find('img', alt='[protected post]')
-        if (protected_tag):
+        date_tag = glob_div_tag.find('.//p[@class="b-lenta-item-date"]')
+        entry.date = date_tag.text
+        a_tag = glob_div_tag.find('.//h3[@class="b-lenta-item-title"]/a')
+        entry.subject = a_tag.text
+        protected_tag = glob_div_tag.find('.//li[@title="Friends-only"]')
+        if (protected_tag is not None):
             entry.subject = protected_prefix + ' ' + entry.subject
-        try:
-            entry.link = a_tag.attrs['href']
-        except KeyError:
-            divcomments_tag = find_class(glob_div_tag, 'div', 'comments')
-            a_tag = divcomments_tag.find('a')
-            corrected = a_tag.attrs['href'] 
-            entry.link = corrected[:corrected.find('?')]
+        entry.link = a_tag.get('href')
 
-        entrytext_tag = find_class(glob_div_tag, 'div', 'entry_text')
+        entrytext_tag = glob_div_tag.find('.//div[@class="b-lenta-item-content"]')
         # iframes vary between refetches, we strip them
-        for iframe_tag in entrytext_tag.findAll('iframe'):
-            iframe_tag.replaceWith('(IFRAME)')
-        # remove 'like' buttons for the same reason
-        for vk_tag in entrytext_tag.findAll('div', {'class' : 'lj-like'}):
-            vk_tag.replaceWith('')
-        entry.text = entrytext_tag.encode('utf-8').decode()
+        for iframe_tag in entrytext_tag.findall('iframe'):
+            entrytext_tag.replace(iframe_tag, etree.XML('<b>(IFRAME)</b>'))
         # need to strip <div> and </div>
-        pos = entry.text.find('>')
-        entry.text = entry.text[pos + 1:-6]
+        content = etree.tostring(entrytext_tag, with_tail=False, \
+                encoding='utf-8').decode('utf-8')
+        pos = content.find('>')
+        content = content[pos + 1:-6].strip()
+        entry.text=content
         entries.append(entry)
 
 
@@ -75,10 +62,8 @@ def check_logged_state(soup):
     """Checks if we are logged in by analyzing HTML page.
 
     Returns True in case of a yes."""
-    mark_tag = soup.find('input', {'name' : 'user'})
+    mark_tag = soup.find('.//input[@name="user"]')
     if (not mark_tag):
-        return False
-    if 'value' in mark_tag.attrs.keys():
         return True
     else:
         return False
@@ -114,28 +99,31 @@ def main():
     opener = urllib.request.build_opener(cooker)
     response = open_url()
     page = response.read().decode('utf-8')
-    soup = BeautifulSoup(page)
+    soup = etree.HTML(page)
     if not check_logged_state(soup):
         sys.stderr.write('Not logged in\n')
         sys.exit(26)
-    title = soup.title
-    userpic_tag = soup.find('img', alt="Userpic")
-    ara_tag = find_class(soup, 'a', 'i-ljuser-username')
-    image = {'url' : userpic_tag.attrs['src'], 'link' : ara_tag.attrs['href'], \
-            'title' : 'image', 'width' : '100', 'height' : '100'}
+    title = soup.find('.//head/title').text
+    userpic_tag = soup.find('.//img[@class="userpic"]')
+    ara_tag = soup.find('.//a[@class="s-navmenu-rootlink"]')
+    userpic = userpic_tag.get('src')
+    alink = ara_tag.get('href')
+    image = {'url' : userpic, \
+            'link' : alink, \
+            'title' : 'image', \
+            'width' : '100', \
+            'height' : '100'}
     entries = []
     parse_page(soup, entries)
     depth -= 1
     while depth > 0:
-        footer_tag = find_class(soup, 'ul', 'navfooter')
-        a_tag = footer_tag.find('a')
-        try:
-            URL = a_tag.attrs['href']
-        except AttributeError:
+        a_tag = soup.find('.//a[@class="b-pager-text"]')
+        URL = a_tag.get('href')
+        if not URL:
             sys.stderr.write("Couldn't extract next level URL")
             break
         response = open_url()
-        soup = BeautifulSoup(response.read().decode('utf-8'))
+        soup = etree.HTML(response.read().decode('utf-8'))
         parse_page(soup, entries)
         depth -= 1
     rss_feed = rss_builder.build_rss(entries, title, initialURL, \
