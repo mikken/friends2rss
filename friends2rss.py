@@ -9,6 +9,7 @@ import configparser
 import urllib.request
 import urllib.error
 import http.cookiejar
+import http.client
 from os.path import abspath, realpath, dirname
 from os import chdir
 
@@ -97,8 +98,12 @@ def main():
         sys.exit(1)
     cooker = urllib.request.HTTPCookieProcessor(jar)
     opener = urllib.request.build_opener(cooker)
-    response = open_url()
-    page = response.read().decode('utf-8')
+    try:
+        response = open_url()
+        page = response.read().decode('utf-8')
+    except http.client.IncompleteRead:
+        sys.stderr.write('Could not read server response\n')
+        sys.exit(27)
     soup = etree.HTML(page)
     if not check_logged_state(soup):
         sys.stderr.write('Not logged in\n')
