@@ -67,7 +67,7 @@ def build_rss(entries, title, link, description, image):
             <link>{link}</link></image>'.format(**image))
     for entry in entries:
         rss_feed.append('<item>')
-        rss_feed.append('<title>{0}</title>'.format(entry.subject))
+        rss_feed.append('<title>{0}</title>'.format(html.escape(entry.subject)))
         rss_feed.append('<author>{0}</author>'.format(entry.author))
         rss_feed.append('<link>{0}</link>'.format(entry.link))
         rss_feed.append('<pubDate>{0}</pubDate>'.format(\
