@@ -28,6 +28,16 @@ def open_url():
         sys.exit(2)
 
 
+def read_response():
+    try:
+        response = open_url()
+        page = response.read().decode('utf-8')
+    except http.client.IncompleteRead:
+        sys.stderr.write('Could not read server response\n')
+        sys.exit(27)
+    return page
+
+
 def parse_page(soup, entries):
     """Goes through a page and generates a list with entries."""
     glob_divs = soup.findall('.//div[@class="b-lenta-item-wrapper"]')
@@ -98,12 +108,7 @@ def main():
         sys.exit(1)
     cooker = urllib.request.HTTPCookieProcessor(jar)
     opener = urllib.request.build_opener(cooker)
-    try:
-        response = open_url()
-        page = response.read().decode('utf-8')
-    except http.client.IncompleteRead:
-        sys.stderr.write('Could not read server response\n')
-        sys.exit(27)
+    page=read_response()
     soup = etree.HTML(page)
     if not check_logged_state(soup):
         sys.stderr.write('Not logged in\n')
@@ -127,8 +132,7 @@ def main():
         if not URL:
             sys.stderr.write("Couldn't extract next level URL")
             break
-        response = open_url()
-        soup = etree.HTML(response.read().decode('utf-8'))
+        soup = etree.HTML(read_response())
         parse_page(soup, entries)
         depth -= 1
     rss_feed = rss_builder.build_rss(entries, title, initialURL, \
