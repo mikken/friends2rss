@@ -127,7 +127,7 @@ def main():
     parse_page(soup, entries)
     depth -= 1
     while depth > 0:
-        a_tag = soup.find('.//a[@class="b-pager-text"]')
+        a_tag = soup.find('.//a[@class="b-pager-link"]')
         URL = a_tag.get('href')
         if not URL:
             sys.stderr.write("Couldn't extract next level URL")
