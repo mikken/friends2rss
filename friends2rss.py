@@ -31,11 +31,11 @@ def open_url():
 def read_response():
     try:
         response = open_url()
-        page = response.read().decode('utf-8')
+        tree = etree.parse(response, parser=etree.HTMLParser())
     except http.client.IncompleteRead:
         sys.stderr.write('Could not read server response\n')
         sys.exit(27)
-    return page
+    return tree
 
 
 def parse_page(soup, entries):
@@ -108,8 +108,8 @@ def main():
         sys.exit(1)
     cooker = urllib.request.HTTPCookieProcessor(jar)
     opener = urllib.request.build_opener(cooker)
-    page=read_response()
-    soup = etree.HTML(page)
+    tree=read_response()
+    soup = tree.getroot()
     if not check_logged_state(soup):
         sys.stderr.write('Not logged in\n')
         sys.exit(26)
@@ -132,7 +132,7 @@ def main():
         if not URL:
             sys.stderr.write("Couldn't extract next level URL")
             break
-        soup = etree.HTML(read_response())
+        soup = read_response().getroot()
         parse_page(soup, entries)
         depth -= 1
     rss_feed = rss_builder.build_rss(entries, title, initialURL, \
