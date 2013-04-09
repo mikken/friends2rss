@@ -60,6 +60,9 @@ def parse_page(soup, entries):
         # iframes vary between refetches, we strip them
         for iframe_tag in entrytext_tag.findall('iframe'):
             entrytext_tag.replace(iframe_tag, etree.XML('<b>(IFRAME)</b>'))
+        # strip LJ userheads
+        for img_tag in entrytext_tag.findall('.//img[@class="i-ljuser-userhead"]'):
+            img_tag.attrib['src'] = 'http://l-stat.livejournal.com/img/userinfo.gif'
         # need to strip <div> and </div>
         content = etree.tostring(entrytext_tag, with_tail=False, \
                 encoding='utf-8').decode('utf-8')
