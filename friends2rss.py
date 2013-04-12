@@ -63,6 +63,9 @@ def parse_page(soup, entries):
         # strip LJ userheads
         for img_tag in entrytext_tag.findall('.//img[@class="i-ljuser-userhead"]'):
             img_tag.attrib['src'] = 'http://l-stat.livejournal.com/img/userinfo.gif'
+        # strip comments
+        for vk_tag in entrytext_tag.iter(tag=etree.Comment):
+            vk_tag.getparent().remove(vk_tag)
         # need to strip <div> and </div>
         content = etree.tostring(entrytext_tag, with_tail=False, \
                 encoding='utf-8').decode('utf-8')
