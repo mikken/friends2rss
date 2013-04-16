@@ -58,8 +58,8 @@ def parse_page(soup, entries):
 
         entrytext_tag = glob_div_tag.find('.//div[@class="b-lenta-item-content"]')
         # iframes vary between refetches, we strip them
-        for iframe_tag in entrytext_tag.findall('iframe'):
-            entrytext_tag.replace(iframe_tag, etree.XML('<b>(IFRAME)</b>'))
+        for iframe_tag in entrytext_tag.findall('.//iframe'):
+            iframe_tag.getparent().replace(iframe_tag, etree.XML('<b>(IFRAME)</b>'))
         # strip LJ userheads
         for img_tag in entrytext_tag.findall('.//img[@class="i-ljuser-userhead"]'):
             img_tag.attrib['src'] = 'http://l-stat.livejournal.com/img/userinfo.gif'
