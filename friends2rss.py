@@ -42,11 +42,14 @@ def parse_page(soup, entries):
     """Goes through a page and generates a list with entries."""
     glob_divs = soup.findall('.//div[@class="b-lenta-item-wrapper"]')
     for glob_div_tag in glob_divs:
-        entry = rss_builder.Entry()
+        promo_tag = glob_div_tag.find( \
+                './/li[@class="b-item-type-ad i-friendsfeed-ad-close"]')
+        if promo_tag is not None:
+            continue
 
+        entry = rss_builder.Entry()
         span_tag = glob_div_tag.find('.//span[@class="ljuser  i-ljuser     "]')
         entry.author = span_tag.get('lj:user')
-
         date_tag = glob_div_tag.find('.//p[@class="b-lenta-item-date"]')
         entry.date = date_tag.text
         a_tag = glob_div_tag.find('.//h3[@class="b-lenta-item-title"]/a')
