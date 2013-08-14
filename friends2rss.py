@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """This script loads LJ cookies and then generates RSS feed from friends page.
 
-Author: Paul Volkov
+Author: Pavel Volkov
 """
 
 import sys
@@ -151,7 +151,6 @@ def main():
 
 
 if __name__ == '__main__':
-    # Parse argument list
     usage = 'Usage: friend2rss.py [-q]\n\n'
     keep_quiet = False
     for argument in sys.argv[1:]:
@@ -160,5 +159,4 @@ if __name__ == '__main__':
         else:
             sys.stderr.write(usage)
             sys.exit(25)
-    # Execute main procedure
     main()

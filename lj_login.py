@@ -4,7 +4,7 @@
 It will prompt you for username and password, perform a login and
 save resulting cookies into a file.
 
-Author: Paul Volkov
+Author: Pavel Volkov
 """
 
 URL = 'https://www.livejournal.com/login.bml?ret=1'

@@ -1,7 +1,7 @@
 #/usr/bin/env python3
 """This module builds XML file with RSS feed using extracted information.
 
-Author: Paul Volkov
+Author: Pavel Volkov
 """
 
 import re
