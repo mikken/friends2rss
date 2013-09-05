@@ -83,7 +83,7 @@ def check_logged_state(soup):
 
     Returns True in case of a yes."""
     mark_tag = soup.find('.//input[@name="user"]')
-    if (not mark_tag):
+    if mark_tag is None:
         return True
     else:
         return False
