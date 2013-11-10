@@ -40,7 +40,7 @@ def read_response():
 
 def parse_page(soup, entries):
     """Goes through a page and generates a list with entries."""
-    glob_divs = soup.findall('.//div[@class="b-lenta-item-wrapper"]')
+    glob_divs = soup.findall('.//article[@class="b-lenta-item"]')
     for glob_div_tag in glob_divs:
         promo_tag = glob_div_tag.find( \
                 './/li[@class="b-item-type-ad i-friendsfeed-ad-close"]')
