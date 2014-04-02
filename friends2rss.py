@@ -48,7 +48,7 @@ def parse_page(soup, entries):
             continue
 
         entry = rss_builder.Entry()
-        span_tag = glob_div_tag.find('.//span[@class="ljuser  i-ljuser     "]')
+        span_tag = glob_div_tag.find('.//p[@class="b-lenta-item-journal"]/span')
         entry.author = span_tag.get('lj:user')
         date_tag = glob_div_tag.find('.//p[@class="b-lenta-item-date"]')
         entry.date = date_tag.text
