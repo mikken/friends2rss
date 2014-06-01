@@ -40,35 +40,23 @@ def read_response():
 
 def parse_page(soup, entries):
     """Goes through a page and generates a list with entries."""
-    glob_divs = soup.findall('.//article[@class="b-lenta-item"]')
-    for glob_div_tag in glob_divs:
-        promo_tag = glob_div_tag.find( \
-                './/li[@class="b-item-type-ad i-friendsfeed-ad-close"]')
-        if promo_tag is not None:
-            continue
-
+    articles = soup.findall('.//article[@data-journal]')
+    for article in articles:
         entry = rss_builder.Entry()
-        span_tag = glob_div_tag.find('.//p[@class="b-lenta-item-journal"]/span')
-        entry.author = span_tag.get('lj:user')
-        date_tag = glob_div_tag.find('.//p[@class="b-lenta-item-date"]')
+        entry.author = article.get('data-journal')
+        date_tag = article.find('.//span[@class="b-lenta-item-date"]')
         entry.date = date_tag.text
-        a_tag = glob_div_tag.find('.//h3[@class="b-lenta-item-title"]/a')
-        entry.subject = a_tag.text
-        protected_tag = glob_div_tag.find('.//li[@title="Friends-only"]')
+        title_tag = article.find('.//h3[@class="b-lenta-item-title"]/a')
+        entry.subject = title_tag.text
+        protected_tag = article.find(\
+          './header/div/ul[@class="b-item-type"]/li[@title="Friends-only"]')
         if (protected_tag is not None):
             entry.subject = protected_prefix + ' ' + entry.subject
-        entry.link = a_tag.get('href')
-
-        entrytext_tag = glob_div_tag.find('.//div[@class="b-lenta-item-content"]')
+        entry.link = title_tag.get('href')
+        entrytext_tag = article.find('.//div[@class="b-lenta-item-content"]')
         # iframes vary between refetches, we strip them
         for iframe_tag in entrytext_tag.findall('.//iframe'):
             iframe_tag.getparent().replace(iframe_tag, etree.XML('<b>(IFRAME)</b>'))
-        # strip LJ userheads
-        for img_tag in entrytext_tag.findall('.//img[@class="i-ljuser-userhead"]'):
-            img_tag.attrib['src'] = 'http://l-stat.livejournal.com/img/userinfo.gif'
-        # strip comments
-        for vk_tag in entrytext_tag.iter(tag=etree.Comment):
-            vk_tag.getparent().remove(vk_tag)
         # need to strip <div> and </div>
         content = etree.tostring(entrytext_tag, with_tail=False, \
                 encoding='utf-8').decode('utf-8')
@@ -80,9 +68,8 @@ def parse_page(soup, entries):
 
 def check_logged_state(soup):
     """Checks if we are logged in by analyzing HTML page.
-
     Returns True in case of a yes."""
-    mark_tag = soup.find('.//input[@name="user"]')
+    mark_tag = soup.find('logged-out"')
     if mark_tag is None:
         return True
     else:
@@ -123,10 +110,9 @@ def main():
         sys.stderr.write('Not logged in\n')
         sys.exit(26)
     title = soup.find('.//head/title').text
-    userpic_tag = soup.find('.//img[@class="userpic"]')
-    ara_tag = soup.find('.//a[@class="s-navmenu-rootlink"]')
-    userpic = userpic_tag.get('src')
-    alink = ara_tag.get('href')
+    userpic_tag = soup.find('.//div[@class="s-userpic"]')
+    userpic = userpic_tag.get('style').split('(')[-1][:-1]
+    alink = soup.find('.//a[@class="l-flatslide-menu-link"]').get('href')
     image = {'url' : userpic, \
             'link' : alink, \
             'title' : 'image', \
@@ -134,13 +120,12 @@ def main():
             'height' : '100'}
     entries = []
     parse_page(soup, entries)
+    skip_step = len(entries)
+    skip = 0
     depth -= 1
     while depth > 0:
-        a_tag = soup.find('.//a[@class="b-pager-link"]')
-        URL = a_tag.get('href')
-        if not URL:
-            sys.stderr.write("Couldn't extract next level URL")
-            break
+        skip += skip_step
+        URL = initialURL + '?skip=' + str(skip)
         soup = read_response().getroot()
         parse_page(soup, entries)
         depth -= 1

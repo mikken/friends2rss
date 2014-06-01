@@ -38,6 +38,6 @@ respstr = response.read().decode('utf-8')
 if len(jar) == 0:
     sys.stderr.write('Did not receive any cookies\n')
     sys.exit(2)
-if respstr.find("name='action:logout'") == -1:
+if respstr.find("logged-in") == -1:
     sys.stderr.write('Response does not contain "login flags"\n')
     sys.exit(3)
