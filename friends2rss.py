@@ -57,6 +57,9 @@ def parse_page(soup, entries):
         # iframes vary between refetches, we strip them
         for iframe_tag in entrytext_tag.findall('.//iframe'):
             iframe_tag.getparent().replace(iframe_tag, etree.XML('<b>(IFRAME)</b>'))
+        # strip likes
+        for like in entrytext_tag.findall('.//div[@class="lj-like"]'):
+            like.getparent().remove(like)
         # need to strip <div> and </div>
         content = etree.tostring(entrytext_tag, with_tail=False, \
                 encoding='utf-8').decode('utf-8')
