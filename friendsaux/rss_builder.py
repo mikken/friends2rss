@@ -19,12 +19,13 @@ class Entry:
         return repr((self.author, self.date, self.subject, 
                 self.link, self.text))
 
-def convert_date(old_date):
+def convert_date(old_date,find_on=False):
     """Converts a date found in LJ's HTML code into RSS format."""
     month_names = ('January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December')
     weekday_names = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')
-    match = re.search(r'(.+) (\d+) (\d\d\d\d), (\d\d):(\d\d)', old_date)
+    pattern = r'(.+) (\d+) (\d\d\d\d), (\d\d):(\d\d)'
+    match = re.search(pattern if not find_on else 'on ' + pattern, old_date)
     if match:
         day = int(match.group(2))
         month = match.group(1)
@@ -62,7 +63,7 @@ def build_rss(entries, title, link, description, image):
             <link>{1}</link><description>{2}</description>\n"""\
             .format(title, link, description)]
     rss_feed.append('<lastBuildDate>{0}</lastBuildDate>'\
-            .format(convert_date(entries[0].date)))
+            .format(entries[0].date))
     rss_feed.append('<image><url>{url}</url><title>{title}</title>\
             <link>{link}</link></image>'.format(**image))
     for entry in entries:
@@ -70,8 +71,7 @@ def build_rss(entries, title, link, description, image):
         rss_feed.append('<title>{0}</title>'.format(html.escape(entry.subject)))
         rss_feed.append('<author>{0}</author>'.format(entry.author))
         rss_feed.append('<link>{0}</link>'.format(entry.link))
-        rss_feed.append('<pubDate>{0}</pubDate>'.format(\
-                convert_date(entry.date)))
+        rss_feed.append('<pubDate>{0}</pubDate>'.format(entry.date))
         rss_feed.append('<description>{0}</description>'.format(\
                 html.escape(entry.text)))
         rss_feed.append('</item>')

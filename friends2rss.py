@@ -5,6 +5,7 @@ Author: Pavel Volkov
 """
 
 import sys
+import re
 import configparser
 import urllib.request
 import urllib.error
@@ -45,7 +46,12 @@ def parse_page(soup, entries):
         entry = rss_builder.Entry()
         entry.author = article.get('data-journal')
         date_tag = article.find('.//span[@class="b-lenta-item-date"]')
-        entry.date = date_tag.text
+        if date_tag is None: # reposts have weird mark-up
+            wrap_tag = article.find('.//span[@class="b-lenta-item-journal"]')
+            entry.date = rss_builder.convert_date(\
+                    etree.tostring(wrap_tag).decode(),True)
+        else:
+            entry.date = rss_builder.convert_date(date_tag.text)
         title_tag = article.find('.//h3[@class="b-lenta-item-title"]/a')
         entry.subject = title_tag.text
         protected_tag = article.find(\
